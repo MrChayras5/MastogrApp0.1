@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -32,7 +33,13 @@ public class IniciarSesion extends AppCompatActivity {
         mAuth=FirebaseAuth.getInstance();
         correoI = findViewById(R.id.correo);
         contrasenaI = findViewById(R.id.contrasena);
-
+        Button inisiarsesionbtn = findViewById(R.id.inisiarsesionbtn);
+        inisiarsesionbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                inisiarSesion();
+            }
+        });
     }
 
     public void onStart(){
@@ -40,22 +47,40 @@ public class IniciarSesion extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
     }
 
-    public void iniciarSesion(View v){
-        mAuth.signInWithEmailAndPassword(correoI.getText().toString().trim(), contrasenaI.getText().toString())
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if(task.isSuccessful()){
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            Toast.makeText(getApplicationContext(),"Listo", Toast.LENGTH_SHORT).show();
-                            Intent i = new Intent(getApplicationContext(), Prueba.class);
-                            startActivity(i);
-                        }else{
-                            Toast.makeText(getApplicationContext(),"Fallido", Toast.LENGTH_SHORT).show();
+    public void inisiarSesion() {
+        String correo = correoI.getText().toString();
+        String contrasena = contrasenaI.getText().toString();
+
+        if (!correo.isEmpty() && !contrasena.isEmpty()) {
+            mAuth.signInWithEmailAndPassword(correo, contrasena)
+                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                Toast.makeText(IniciarSesion.this, "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(IniciarSesion.this, Menu_Paciente.class));
+                                finish(); // Opcionalmente, finaliza la actividad actual para que el usuario no pueda regresar
+
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Error en el inicio de sesión",
+                                        Toast.LENGTH_SHORT).show();
+                            }
                         }
-                    }
-                });
+                    });
+        } else {
+            Toast.makeText(IniciarSesion.this, "Por favor, completa todos los campos", Toast.LENGTH_SHORT).show();
+        }
+    }
 
 
+
+    public void registrarse(View view){
+        Intent i = new Intent(this, Registro.class);
+        startActivity(i);
+    }
+
+    public void prueba(View v){
+        Intent i = new Intent(this, Menu_Paciente.class);
+        startActivity(i);
     }
 }
