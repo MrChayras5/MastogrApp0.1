@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "144800879646",
+    "firebase_url": "https://mastograpp-425a6-default-rtdb.firebaseio.com",
+    "project_id": "mastograpp-425a6",
+    "storage_bucket": "mastograpp-425a6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:144800879646:android:f42ea4ab3e71a369c70a0f",
+        "android_client_info": {
+          "package_name": "com.example.mastograpp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "144800879646-7e7k3ld6v97talqu0641o9doprd9onbv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCbJeoNixV9AC9Idgc4d3Amfcnp_HXdphA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "144800879646-7e7k3ld6v97talqu0641o9doprd9onbv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
