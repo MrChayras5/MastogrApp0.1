@@ -17,11 +17,19 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class IniciarSesion extends AppCompatActivity {
 
     public EditText correoI;
     public EditText contrasenaI;
+    //cambiar, esto esta mal
+    public Boolean AsistntM;
+public Button inisiarsesionbt;
 
     private FirebaseAuth mAuth;
 
@@ -31,10 +39,12 @@ public class IniciarSesion extends AppCompatActivity {
         setContentView(R.layout.activity_iniciar_sesion);
 
         mAuth=FirebaseAuth.getInstance();
+
         correoI = findViewById(R.id.correo);
         contrasenaI = findViewById(R.id.contrasena);
-        Button inisiarsesionbtn = findViewById(R.id.inisiarsesionbtn);
-        inisiarsesionbtn.setOnClickListener(new View.OnClickListener() {
+
+        Button inisiarsesionbt = findViewById(R.id.inisiarsesionbtn);
+        inisiarsesionbt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 inisiarSesion();
@@ -51,27 +61,57 @@ public class IniciarSesion extends AppCompatActivity {
         String correo = correoI.getText().toString();
         String contrasena = contrasenaI.getText().toString();
 
-        if (!correo.isEmpty() && !contrasena.isEmpty()) {
-            mAuth.signInWithEmailAndPassword(correo, contrasena)
-                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                Toast.makeText(IniciarSesion.this, "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(IniciarSesion.this, Menu_Paciente.class));
-                                finish(); // Opcionalmente, finaliza la actividad actual para que el usuario no pueda regresar
 
-                            } else {
-                                Toast.makeText(getApplicationContext(), "Error en el inicio de sesión",
-                                        Toast.LENGTH_SHORT).show();
-                            }
+        if (!correo.isEmpty() && !contrasena.isEmpty()) {
+            mAuth.signInWithEmailAndPassword(correo, contrasena).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    if (task.isSuccessful()) {
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        if (user != null) {
+                            String userId = user.getUid();
+
+                            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
+                            userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot Snapshot) {
+                                    if (Snapshot.exists()) {
+                                        Boolean asistente = Snapshot.child("AsistntM").getValue(Boolean.class);
+
+                                        if (asistente != null) {
+                                            if (asistente) {
+                                                // El usuario es un asistente
+                                                Toast.makeText(IniciarSesion.this, "Bienvenido, Asistente", Toast.LENGTH_SHORT).show();
+                                                startActivity(new Intent(IniciarSesion.this, Menu_Asistente.class));
+                                            } else {
+                                                // El usuario no es un asistente
+                                                Toast.makeText(IniciarSesion.this, "Bienvenido, Paciente", Toast.LENGTH_SHORT).show();
+                                                startActivity(new Intent(IniciarSesion.this, Menu_Paciente.class));
+                                            }
+                                            finish(); // Opcionalmente, finaliza la actividad actual para que el usuario no pueda regresar
+
+                                        }else{
+                                            Toast.makeText(IniciarSesion.this, "El valor el null", Toast.LENGTH_SHORT).show();
+
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+                                    Toast.makeText(getApplicationContext(), "Error", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                         }
-                    });
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Error en el inicio de sesión", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
         } else {
             Toast.makeText(IniciarSesion.this, "Por favor, completa todos los campos", Toast.LENGTH_SHORT).show();
         }
     }
-
 
 
     public void registrarse(View view){
