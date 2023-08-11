@@ -86,7 +86,7 @@ public Button inisiarsesionbt;
                                             } else {
                                                 // El usuario no es un asistente
                                                 Toast.makeText(IniciarSesion.this, "Bienvenido, Paciente", Toast.LENGTH_SHORT).show();
-                                                startActivity(new Intent(IniciarSesion.this, Menu_Paciente.class));
+                                                startActivity(new Intent(IniciarSesion.this, MenuLateral.class));
                                             }
                                             finish(); // Opcionalmente, finaliza la actividad actual para que el usuario no pueda regresar
 
